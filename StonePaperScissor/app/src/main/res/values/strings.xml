@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">StonePaperScissor</string>
+    <string name="stone">STONE</string>
+    <string name="paper">PAPER</string>
+    <string name="scossor">SCISSOR</string>
+    <string name="comp">Image</string>
+    <string name="man">Image</string>
+    <string name="phone">PHONE</string>
+    <string name="you">YOU</string>
+    <string name="pPoint">0</string>
+    <string name="h_Point">0</string>
+
+</resources>
