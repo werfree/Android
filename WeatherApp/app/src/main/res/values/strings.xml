@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="getCity">Enter your city...</string>
+    <string name="button">GET THAT</string>
+    <string name="title">Get Weather</string>
+    <string name="temperature">Temp</string>
+    <string name="result">Weather</string>
+    <string name="name">SAyantan</string>
+    <string name="forcast">forcast</string>
+</resources>
