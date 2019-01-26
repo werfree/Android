@@ -43,7 +43,6 @@ public class RecipientFragment extends Fragment {
     public RecipientFragment() {
         // Required empty public constructor
 
-        ;
     }
 
 

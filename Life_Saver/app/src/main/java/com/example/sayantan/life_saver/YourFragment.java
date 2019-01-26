@@ -1,6 +1,7 @@
 package com.example.sayantan.life_saver;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,12 +18,17 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,15 +42,16 @@ import java.util.Vector;
 public class YourFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private DatabaseReference donorReference, getUserData,databaseReference;
+    private DatabaseReference donorReference, getUserData, databaseReference;
     private FirebaseAuth mAuth;
 
+    ArrayList<String[]> data = new ArrayList<String[]>();
     public View view;
 
-    public static int q=0;
-    public static int w=0;
+    public static int q = 0;
+    public static int w = 0;
 
-    public static List<String> vect= new ArrayList<>(), vact= new ArrayList<>();
+    public static List<String> vect = new ArrayList<>(), vact = new ArrayList<>();
 
     String BloodGroup, BloodType;
 
@@ -63,181 +70,129 @@ public class YourFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_your, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.Recycle_view);
 
-        Button b=view.findViewById(R.id.sbar);
+
+        Button b = view.findViewById(R.id.sbar);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent mainIntent=new Intent(getActivity(),Slip.class);
+                Intent mainIntent = new Intent(getActivity(), Slip.class);
                 startActivity(mainIntent);
 
             }
         });
 
 
-
-
-
         mAuth = FirebaseAuth.getInstance();
 
-        String cur_uid=mAuth.getUid();
+        String cur_uid = mAuth.getUid();
 
-        getUserData=FirebaseDatabase.getInstance().getReference().child("Users").child(cur_uid);
+        getUserData = FirebaseDatabase.getInstance().getReference().child("Slip").child(cur_uid);
 
-        getUserData.child("History").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    //Toast.makeText(getContext(), childSnapshot.getKey(), Toast.LENGTH_LONG).show();
-                    char[] temp = childSnapshot.getKey().toCharArray();
-                    String tamp = childSnapshot.getValue().toString().trim();
-                    temp[4]='/';
-                    temp[7]='/';
-                    temp[10]=' ';
-                    temp[13]=':';
-                    temp[16]=':';
-                    vact.add(tamp);
-                    vect.add(String.copyValueOf(temp));
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-
-        getUserData.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                BloodGroup=(dataSnapshot.child("userBlood").getValue().toString());
-                BloodType=(dataSnapshot.child("userType")).getValue().toString();
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-                try{
-                    throw databaseError.toException();
-                }
-                catch (Exception e){
-                    Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-                }
-
-            }
-        });
-
-
-        donorReference= FirebaseDatabase.getInstance().getReference().child("Users");
+        donorReference = FirebaseDatabase.getInstance().getReference().child("Slip").child(mAuth.getUid());
         donorReference.keepSynced(true);
-        databaseReference=FirebaseDatabase.getInstance().getReference().child("Users");
-        databaseReference.keepSynced(true);
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-
         // Inflate the layout for this fragment
+
+
+
+        final RecyclerView.Adapter adapter = new RecyclerView.Adapter<all_donarViewHolder>() {
+
+            @Override
+            public all_donarViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View v = LayoutInflater.from(getContext()).inflate(R.layout.rtab_layout, parent, false);
+                return new all_donarViewHolder(v);
+            }
+
+            @Override
+            public void onBindViewHolder(all_donarViewHolder holder, int position) {
+
+                holder.setUserName(data.get(position)[1]);
+                holder.setUserBlood(data.get(position)[2]);
+                holder.setUserPh(data.get(position)[3]);
+                holder.setUserCity(data.get(position)[0]);
+
+
+            }
+
+            @Override
+            public int getItemCount() {
+                //Toast.makeText(getContext(), ""+data.size(),Toast.LENGTH_SHORT);
+                return data.size();
+            }
+        };
+        recyclerView.setAdapter(adapter);
+
+        donorReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                try {
+                    data.add(new String[]
+                            {
+                                    dataSnapshot.child("loc").getValue(String.class), dataSnapshot.child("timesapp").getValue(String.class), dataSnapshot.child("type").getValue(String.class), ""
+                            });
+                    adapter.notifyDataSetChanged();
+
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(getContext(), e.getMessage() + "" , Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        /*databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-
-                // Toast.makeText(null,m.keySet().toArray()[0].toString(),Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });*/
-
-            FirebaseRecyclerAdapter<all_donor, YourFragment.all_donarViewHolder> firebaseRecyclerAdapter =
-                    new FirebaseRecyclerAdapter<all_donor, YourFragment.all_donarViewHolder>
-                            (
-                                    all_donor.class,
-                                    R.layout.mytab_layout,
-                                    YourFragment.all_donarViewHolder.class,
-                                    donorReference
-                            ) {
-                        @Override
-                        protected void populateViewHolder(YourFragment.all_donarViewHolder viewHolder, final all_donor model, int position) {
-
-
-                            boolean a;
-                            if (model.getUserType().equals(BloodType) || (model.getUserType().equals("Not Now"))) {
-                                a = false;
-                            } else {
-                                a = true;
-                            }
-
-
-                            if (a && (model.getUserBlood().equals(BloodGroup))) {
-
-
-                                view.setVisibility(View.VISIBLE);
-
-                                viewHolder.setUserName(model.getUserName());
-                                viewHolder.setUserBlood(model.getUserBlood());
-                                viewHolder.setUserPh(model.getUserPh());
-                                viewHolder.setUserType(model.getUserType());
-                                viewHolder.setUserCity(model.getUserCity());
-
-
-                            } else {
-
-                                viewHolder.Layout_hide();
-
-
-                            }
-
-
-
-
-                        }
-
-
-                    };
-
-            recyclerView.setAdapter(firebaseRecyclerAdapter);
-
-
-        }
-
-
-    public static class all_donarViewHolder extends RecyclerView.ViewHolder{
-
-        String[] a;
+    class all_donarViewHolder extends RecyclerView.ViewHolder {
 
         View mView;
-        Button call,sbar;
+
+        Button call;
         private LinearLayout linearLayout;
         LinearLayout.LayoutParams params;
+
         public all_donarViewHolder(View itemView) {
             super(itemView);
-            mView=itemView;
+            mView = itemView;
 
             this.linearLayout = linearLayout;
-            linearLayout=(LinearLayout)itemView.findViewById(R.id.linear);
+            linearLayout = (LinearLayout) itemView.findViewById(R.id.linear);
             params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-
-
+            //itemView.findViewById(R.id.call).setVisibility(View.GONE);
+            //itemView.findViewById(R.id.call).setVisibility(View.GONE);
 
         }
-
 
         public void setUserType(String userType) {
 
@@ -245,82 +200,25 @@ public class YourFragment extends Fragment {
 
         public void setUserName(String userName) {
 
-            TextView name=(TextView)mView.findViewById(R.id.donor_name);
-            String p="";
+            TextView name = (TextView) mView.findViewById(R.id.donor_name);
 
-                if (q < vect.size()) {
-                    p = vect.get(q).toString();
-
-                }
-
-
-
-            name.setText(p);
-
+            name.setText(userName);
 
         }
 
-        public void setUserBlood(String userBlood){
-            TextView blood=(TextView)mView.findViewById(R.id.donor_blood);
-            String p="";
-
-
-
-                if (q <vact.size()) {
-                    p = vact.get(q).toString();
-
-                    a = p.split(" ");
-
-
-
-                    blood.setText(a[0]);
-
-
-
-
-                }
-
-
-
-
+        public void setUserBlood(String userBlood) {
+            TextView blood = (TextView) mView.findViewById(R.id.donor_blood);
+            blood.setText(userBlood);
         }
 
-        public  void setUserPh(String userPh) {
-            TextView ph=(TextView)mView.findViewById(R.id.donor_phone_no);
-            String p="";
-            if (q <vact.size()) {
-
-
-
-
-
-               ph.setText("Unit:-"+a[1]);
-
-
-
-
-
-            }
+        public void setUserPh(String userPh) {
+            //TextView ph = (TextView) mView.findViewById(R.id.donor_phone_no);
+           // ph.setText(userPh);
         }
-        public  void setUserCity(String userCity) {
-            TextView ct=(TextView)mView.findViewById(R.id.donor_city);
-            String p="";
-            if (q <vact.size()) {
 
-
-
-
-
-                ct.setText(a[2]);
-                q++;
-        }}
-
-
-        public void types(String s){
-            params.height=0;
-            params.width=0;
-            TextView t=(TextView)mView.findViewById(R.id.donor_types);
-            t.setText(s);
+        public void setUserCity(String userCity) {
+            TextView ct = (TextView) mView.findViewById(R.id.donor_city);
+            ct.setText(userCity);
         }
 
         public void Layout_hide() {
@@ -333,6 +231,4 @@ public class YourFragment extends Fragment {
         }
     }
 
-
 }
-

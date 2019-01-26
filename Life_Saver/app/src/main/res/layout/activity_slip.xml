@@ -22,11 +22,11 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/unit"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Unit of blood needed"
-            android:inputType="number" />
+            android:hint="Name"
+            android:inputType="text"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -40,8 +40,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Location"
-             />
+            />
     </android.support.design.widget.TextInputLayout>
+
+
 
     <Spinner
         android:id="@+id/bloodgroup"
