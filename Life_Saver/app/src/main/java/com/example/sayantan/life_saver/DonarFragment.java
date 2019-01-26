@@ -181,7 +181,7 @@ public class DonarFragment extends Fragment {
 
         View mView;
 
-        Button call;
+        Button call,loc;
         private LinearLayout linearLayout;
         LinearLayout.LayoutParams params;
 
@@ -194,6 +194,7 @@ public class DonarFragment extends Fragment {
             params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             call = itemView.findViewById(R.id.call);
+
 
         }
 
