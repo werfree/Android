@@ -22,7 +22,9 @@
         android:layout_height="wrap_content"
         android:elevation="5dp"
         android:layout_alignParentTop="true"
-        android:tooltipText="City"></android.support.v7.widget.SearchView>
+        android:tooltipText="City">
+
+    </android.support.v7.widget.SearchView>
 
     <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.LinearLayoutCompat

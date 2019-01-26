@@ -36,6 +36,8 @@ public class MainPage extends AppCompatActivity {
 
     private DatabaseReference databaseReference;
 
+    private FirebaseUser firebaseUser;
+
     Toolbar toolbar;
 
     private ViewPager viewPager;
@@ -51,6 +53,8 @@ public class MainPage extends AppCompatActivity {
     public String shareUrl;
 
     WebView webView;
+
+    private static String versions="1.1";
 
 
     @Override
@@ -83,6 +87,8 @@ public class MainPage extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
 
+        firebaseUser = mAuth.getInstance().getCurrentUser();
+
     }
 
     @Override
@@ -91,9 +97,16 @@ public class MainPage extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
+
+
         if (currentUser == null) {
 
-            LogoutUser();
+            Intent intent = new Intent(MainPage.this,SignUp.class);
+            Toast.makeText(MainPage.this,"All Done",Toast.LENGTH_LONG).show();
+            startActivity(intent);
+            finish();
+
+
 
         } else {
 
@@ -101,6 +114,7 @@ public class MainPage extends AppCompatActivity {
 
 
         }
+
 
 
     }
@@ -114,10 +128,12 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                String version=(dataSnapshot.child("version")).getValue().toString();
+
                 updateUrl = (dataSnapshot.child("updateUrl")).getValue().toString();
                 shareUrl=((dataSnapshot.child("shareUrl")).getValue().toString());
 
-                if (!(updateUrl.equals(""))) {
+                if (!(version.equals(versions)  || !(updateUrl.equals("")))) {
 
                     new AlertDialog.Builder(MainPage.this)
                             .setTitle("A new version is available")
@@ -151,12 +167,12 @@ public class MainPage extends AppCompatActivity {
 
     private void LogoutUser() {
 
-        mAuth.signOut();
 
-        Intent startPage = new Intent(MainPage.this, StartPage.class);
-        startPage.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(startPage);
-        finish();
+               Intent intent = new Intent(MainPage.this,StartPage.class);
+               startActivity(intent);
+               finish();
+               mAuth.signOut();
+
 
 
     }

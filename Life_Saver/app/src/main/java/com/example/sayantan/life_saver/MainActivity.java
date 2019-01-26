@@ -3,8 +3,16 @@ package com.example.sayantan.life_saver;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +30,25 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 finally {
-                    Intent mainIntent=new Intent(MainActivity.this,MainPage.class);
-                    startActivity(mainIntent);
+                    mAuth = FirebaseAuth.getInstance();
+                    FirebaseUser currentUser = mAuth.getCurrentUser();
+
+                    if (mAuth.getUid() == null) {
+
+                        Intent intent = new Intent(MainActivity.this,SignUp.class);
+                        //Toast.makeText(MainPage.this,"All Done",Toast.LENGTH_LONG).show();
+                        startActivity(intent);
+                        finish();
+
+
+
+                    }
+                    else {
+
+                        Intent mainIntent = new Intent(MainActivity.this, MainPage.class);
+                        startActivity(mainIntent);
+                        finish();
+                    }
                 }
             }
         };

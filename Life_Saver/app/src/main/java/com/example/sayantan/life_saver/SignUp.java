@@ -261,8 +261,12 @@ public class SignUp extends AppCompatActivity {
                            String currentUid= mAuth.getCurrentUser().getUid();
 
 
+                            FirebaseDatabase.getInstance().getReference().child("Slip").child(currentUid).setValue(".");
+
+
 
                             storeUserDefaultDataReference= FirebaseDatabase.getInstance().getReference().child("Users").child(currentUid);
+
 
 
 
