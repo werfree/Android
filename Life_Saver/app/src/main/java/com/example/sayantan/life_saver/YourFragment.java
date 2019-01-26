@@ -1,10 +1,13 @@
 package com.example.sayantan.life_saver;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -42,7 +47,7 @@ import java.util.Vector;
 public class YourFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private DatabaseReference donorReference, getUserData, databaseReference;
+    private DatabaseReference donorReference, getUserData, db;
     private FirebaseAuth mAuth;
 
     ArrayList<String[]> data = new ArrayList<String[]>();
@@ -103,6 +108,8 @@ public class YourFragment extends Fragment {
         // Inflate the layout for this fragment
 
 
+
+        db = FirebaseDatabase.getInstance().getReference().child("Slip").child(mAuth.getUid());
 
         final RecyclerView.Adapter adapter = new RecyclerView.Adapter<all_donarViewHolder>() {
 
@@ -190,7 +197,13 @@ public class YourFragment extends Fragment {
             params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             //itemView.findViewById(R.id.call).setVisibility(View.GONE);
-            //itemView.findViewById(R.id.call).setVisibility(View.GONE);
+            itemView.findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getContext(),"Called del",Toast.LENGTH_SHORT).show();
+                    delper();
+                }
+            });
 
         }
 
@@ -229,6 +242,26 @@ public class YourFragment extends Fragment {
 
 
         }
+    }
+
+    private void delper()
+    {
+        delnot();
+
+    }
+
+    private void delnot() {
+
+        db.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful())
+                {
+                    Toast.makeText(getContext(),"Done ",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
 }
