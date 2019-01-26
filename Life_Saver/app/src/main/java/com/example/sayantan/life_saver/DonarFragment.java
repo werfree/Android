@@ -139,7 +139,7 @@ public class DonarFragment extends Fragment {
                                 donorReference
                         ) {
                     @Override
-                    protected void populateViewHolder(DonarFragment.all_donarViewHolder viewHolder, final all_donor model, int position) {
+                    protected void populateViewHolder(final DonarFragment.all_donarViewHolder viewHolder, final all_donor model, int position) {
 
 
                         if (model.getUserType().equals("Donor") & (model.getUserCity().equalsIgnoreCase(stext))) {
@@ -170,6 +170,16 @@ public class DonarFragment extends Fragment {
                         });
 
 
+                        viewHolder.loc.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String uri = "google.navigation:q=" + model.getUserCity();
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                                startActivity(intent);
+                            }
+                        });
+
+
                     }
 
 
@@ -181,7 +191,7 @@ public class DonarFragment extends Fragment {
 
         View mView;
 
-        Button call;
+        Button call,loc;
         private LinearLayout linearLayout;
         LinearLayout.LayoutParams params;
 
@@ -194,6 +204,8 @@ public class DonarFragment extends Fragment {
             params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             call = itemView.findViewById(R.id.call);
+            loc = itemView.findViewById(R.id.loca);
+
 
         }
 
