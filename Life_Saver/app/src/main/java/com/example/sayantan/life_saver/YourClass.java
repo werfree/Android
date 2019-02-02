@@ -30,6 +30,9 @@ public class YourClass {
 
     public String getUserName() {
 
+
+        int k=0;
+
         return loc;
     }
 
